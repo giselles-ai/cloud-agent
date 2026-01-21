@@ -2,6 +2,11 @@ import * as z from "zod";
 
 const agentStateBase = z.object({
 	state: z.string(),
+	/**
+	 * Optional step-by-step logs captured during a run.
+	 * Present only when logging is enabled.
+	 */
+	logs: z.array(z.string()).optional(),
 });
 
 const initialState = agentStateBase.extend({

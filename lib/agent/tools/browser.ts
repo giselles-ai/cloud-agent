@@ -89,7 +89,15 @@ export const browserTool = tool({
 	description:
 		"Run agent-browser CLI commands. Prefer snapshot -> refs -> actions. Use JSON output when supported.",
 	inputSchema: TOOL_INPUT_SCHEMA,
-	execute: async ({ command, args, json }) => {
+	execute: async ({
+		command,
+		args,
+		json,
+	}: {
+		command: string;
+		args?: string[];
+		json?: boolean;
+	}) => {
 		if (!ALLOWED_COMMANDS.has(command)) {
 			return {
 				ok: false,

@@ -98,7 +98,8 @@ export async function createAgent({
 		tools,
 		stopWhen: [
 			stepCountIs(maxSteps),
-			({ lastStep }) => Boolean(lastStep?.text?.includes("DONE")),
+			({ lastStep }: { lastStep?: { text?: string } }) =>
+				Boolean(lastStep?.text?.includes("DONE")),
 		],
 		prepareStep: async () => {
 			return {
@@ -110,7 +111,13 @@ export async function createAgent({
 				],
 			};
 		},
-		onStepFinish: ({ text, toolResults }) => {
+		onStepFinish: ({
+			text,
+			toolResults,
+		}: {
+			text: string;
+			toolResults?: ToolResultLike[];
+		}) => {
 			const results = (toolResults ?? []) as ToolResultLike[];
 			const summaries = results.map(summarizeToolResult).filter(Boolean);
 			if (summaries.length > 0) {

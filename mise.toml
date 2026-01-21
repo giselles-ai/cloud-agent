@@ -1,0 +1,13 @@
+[tasks.typecheck]
+description = "TypeScript typecheck"
+run = "bun x tsc --noEmit"
+
+[tasks.biome_check_write]
+description = "Biome check (with write)"
+run = "bun x biome check --write"
+
+[tasks.ok]
+description = "Typecheck + Biome (parallel)"
+run = [
+	{ tasks = ["typecheck", "biome_check_write"] },
+]

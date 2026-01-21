@@ -6,8 +6,12 @@ run = "bun x tsc --noEmit"
 description = "Biome check (with write)"
 run = "bun x biome check --write"
 
+[tasks.knip]
+description = "Knip"
+run = "bun x knip"
+
 [tasks.ok]
-description = "Typecheck + Biome (parallel)"
+description = "Typecheck + Biome (parallel) + Knip"
 run = [
-	{ tasks = ["typecheck", "biome_check_write"] },
+	{ tasks = ["typecheck", "biome_check_write", "knip"] },
 ]

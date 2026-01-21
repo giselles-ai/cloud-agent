@@ -42,3 +42,4 @@ next-env.d.ts
 
 # opensrc - source code for packages
 opensrc/
+llms-furl/

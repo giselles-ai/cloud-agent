@@ -5,7 +5,7 @@ type BashToolkit = {
 };
 
 const DEFAULT_INCLUDE =
-	"**/*.{ts,tsx,js,mjs,cjs,json,md,mdx,css,html,txt,yml,yaml}";
+	"{README.md,package.json,app/**/*.{ts,tsx,js,mjs,cjs,json,md,mdx,css,html,txt,yml,yaml},lib/**/*.{ts,tsx,js,mjs,cjs,json,md,mdx,css,html,txt,yml,yaml},scripts/**/*.{ts,tsx,js,mjs,cjs,json,md,mdx,css,html,txt,yml,yaml}}";
 
 export async function createBashToolkit(
 	projectRoot: string = process.cwd(),

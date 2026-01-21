@@ -7,6 +7,8 @@ const agentStateBase = z.object({
 const initialState = agentStateBase.extend({
 	state: z.literal("INIT"),
 	prompt: z.string(),
+	iterations: z.number().int().nonnegative(),
+	replanCount: z.number().int().nonnegative(),
 });
 
 const planningState = agentStateBase.extend({
@@ -14,6 +16,8 @@ const planningState = agentStateBase.extend({
 	prompt: z.string(),
 	userIntent: z.string(),
 	handoff: z.string().optional(),
+	iterations: z.number().int().nonnegative(),
+	replanCount: z.number().int().nonnegative(),
 });
 
 const planBase = z.object({
@@ -54,6 +58,8 @@ const executingState = agentStateBase.extend({
 	userIntent: z.string(),
 	plans: z.array(Plan),
 	handoff: z.string().optional(),
+	iterations: z.number().int().nonnegative(),
+	replanCount: z.number().int().nonnegative(),
 });
 
 const reviewingState = agentStateBase.extend({
@@ -62,6 +68,8 @@ const reviewingState = agentStateBase.extend({
 	userIntent: z.string(),
 	plans: z.array(Plan),
 	handoff: z.string().optional(),
+	iterations: z.number().int().nonnegative(),
+	replanCount: z.number().int().nonnegative(),
 });
 export type ReviewingState = z.infer<typeof reviewingState>;
 
@@ -72,6 +80,26 @@ const doneState = agentStateBase.extend({
 	plans: z.array(Plan),
 	finalOutput: z.string(),
 	handoff: z.string().optional(),
+	iterations: z.number().int().nonnegative(),
+	replanCount: z.number().int().nonnegative(),
+});
+
+const ErrorObject = z.object({
+	code: z.string(),
+	message: z.string(),
+	stage: z.string(),
+});
+export type ErrorObject = z.infer<typeof ErrorObject>;
+
+const failedState = agentStateBase.extend({
+	state: z.literal("FAILED"),
+	prompt: z.string(),
+	userIntent: z.string().optional(),
+	plans: z.array(Plan).optional(),
+	handoff: z.string().optional(),
+	error: ErrorObject,
+	iterations: z.number().int().nonnegative(),
+	replanCount: z.number().int().nonnegative(),
 });
 
 export const AgentState = z.discriminatedUnion("state", [
@@ -80,6 +108,7 @@ export const AgentState = z.discriminatedUnion("state", [
 	executingState,
 	reviewingState,
 	doneState,
+	failedState,
 ]);
 export type AgentState = z.infer<typeof AgentState>;
 
@@ -87,5 +116,7 @@ export function createAgentState(prompt: string): AgentState {
 	return {
 		state: "INIT",
 		prompt,
+		iterations: 0,
+		replanCount: 0,
 	};
 }

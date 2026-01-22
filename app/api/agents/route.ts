@@ -29,7 +29,7 @@ export async function GET() {
 		.where(eq(agents.userId, session.user.id))
 		.orderBy(desc(agents.createdAt));
 
-	return NextResponse.json(rows);
+  return NextResponse.json({ agents: rows });
 }
 
 export async function POST(request: Request) {

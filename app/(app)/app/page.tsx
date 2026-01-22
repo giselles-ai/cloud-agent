@@ -4,6 +4,8 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useState } from "react";
 
+import { MessagePart } from "./components/MessagePart";
+
 type Agent = {
 	id: string;
 	name: string;
@@ -364,11 +366,14 @@ export default function AppPage() {
 											<div className="text-[11px] uppercase tracking-wide text-slate-500">
 												{message.role}
 											</div>
-											<pre className="whitespace-pre-wrap text-slate-200">
-												{message.parts.map((part) =>
-													part.type === "text" ? part.text : "",
-												)}
-											</pre>
+											<div className="space-y-2">
+												{message.parts.map((part, index) => (
+													<MessagePart
+														key={`${message.id}-${index}`}
+														part={part}
+													/>
+												))}
+											</div>
 										</div>
 									))
 								)}

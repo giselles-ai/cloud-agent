@@ -49,7 +49,7 @@ export async function buildConversationAgent({
 	const agentInstance = new ToolLoopAgent({
 		model: gateway(modelName),
 		instructions: resolveInstructions(agent),
-		tools: toolsConfig.bash ? tools : {},
+		tools,
 		stopWhen: stepCountIs(20),
 	});
 

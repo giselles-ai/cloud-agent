@@ -1,0 +1,136 @@
+{
+  "uiMessage": {
+    "id": "",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "tool-bash",
+        "toolCallId": "toolu_01PmQynGT4ESjCFTn1GbvxP4",
+        "state": "output-available",
+        "input": {
+          "command": "node -v"
+        },
+        "output": {
+          "stdout": "",
+          "stderr": "bash: line 1: cd: /vercel/sandbox/workspace: No such file or directory\n",
+          "exitCode": 1
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "I'm getting an error about the working directory not existing. Let me try to create it first:",
+        "state": "done"
+      },
+      {
+        "type": "tool-bash",
+        "toolCallId": "toolu_01BSTQAF8QMwSnaxgXLW7SYT",
+        "state": "output-available",
+        "input": {
+          "command": "mkdir -p /vercel/sandbox/workspace && cd /vercel/sandbox/workspace && node -v"
+        },
+        "output": {
+          "stdout": "",
+          "stderr": "bash: line 1: cd: /vercel/sandbox/workspace: No such file or directory\n",
+          "exitCode": 1
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "It seems there's a persistent issue with the working directory. Let me try running the command without changing directories:",
+        "state": "done"
+      },
+      {
+        "type": "tool-bash",
+        "toolCallId": "toolu_01PRQh1Zg77nZgAK2K1jM8SL",
+        "state": "output-available",
+        "input": {
+          "command": "/usr/bin/node -v 2>&1 || /usr/local/bin/node -v 2>&1 || which node"
+        },
+        "output": {
+          "stdout": "bash: line 1: /usr/local/bin/node: No such file or directory\n/vercel/runtimes/node24/bin/node\n",
+          "stderr": "bash: line 1: cd: /vercel/sandbox/workspace: No such file or directory\n",
+          "exitCode": 0
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Great! I can see Node.js is located at `/vercel/runtimes/node24/bin/node`. Let me get the version:",
+        "state": "done"
+      },
+      {
+        "type": "tool-bash",
+        "toolCallId": "toolu_01JjZjToU91PgHrjHx5EXPQa",
+        "state": "output-available",
+        "input": {
+          "command": "/vercel/runtimes/node24/bin/node -v"
+        },
+        "output": {
+          "stdout": "",
+          "stderr": "bash: line 1: cd: /vercel/sandbox/workspace: No such file or directory\n",
+          "exitCode": 1
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "The working directory issue is preventing the command from executing. Let me try a workaround by creating the directory first using the writeFile function:",
+        "state": "done"
+      },
+      {
+        "type": "tool-writeFile",
+        "toolCallId": "toolu_01Fj5dQtWyFb9M9dwwyaUEHL",
+        "state": "output-available",
+        "input": {
+          "path": "test.txt",
+          "content": "test"
+        },
+        "output": {
+          "success": true
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Good! Now let me try the command again:",
+        "state": "done"
+      },
+      {
+        "type": "tool-bash",
+        "toolCallId": "toolu_01WnSu5quZE5qjrMPSRFFtAG",
+        "state": "output-available",
+        "input": {
+          "command": "node -v"
+        },
+        "output": {
+          "stdout": "v24.13.0\n",
+          "stderr": "",
+          "exitCode": 0
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Perfect! The Node.js version is **v24.13.0** 🎉",
+        "state": "done"
+      }
+    ]
+  }
+}

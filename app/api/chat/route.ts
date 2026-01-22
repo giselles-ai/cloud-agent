@@ -119,7 +119,7 @@ async function persistMessages(
 	for (const message of uiMessages) {
 		const content = textFromMessage(message);
 		const metadata = serializeUiMessage(message);
-		const id = message.id ?? randomUUID();
+		const id = message.id === "" ? randomUUID() : message.id;
 		if (existingIds.has(id)) {
 			updates.push({ id, content, metadata });
 		} else {

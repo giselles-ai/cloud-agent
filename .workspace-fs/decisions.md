@@ -34,5 +34,4 @@
 
 #### Language policy (repo)
 - Keep all UI and documentation text in English.
-- Use `bun run check:lang` to scan for Japanese characters (see `scripts/check-no-japanese.ts`).
 

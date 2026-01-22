@@ -11,8 +11,7 @@
 		"db:migrate": "bunx drizzle-kit migrate",
 		"db:push": "bunx drizzle-kit push",
 		"lint": "biome check",
-		"format": "biome format --write",
-		"check:lang": "bun scripts/check-no-japanese.ts"
+		"format": "biome format --write"
 	},
 	"dependencies": {
 		"@libsql/client": "0.17.0",

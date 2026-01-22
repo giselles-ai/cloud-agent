@@ -35,7 +35,7 @@
   - `app/(app)/app/page.tsx`
 
 ### まず最初にやること（次のAgentの最優先）
-- `.workspace-fs/next-tasks.md` の「1. DBマイグレーションを確立」を実施。
+- `.workspace-fs/state.md` の「次に人間がやるタスク（チェックリスト）」の「1. DBマイグレーションを確立」を実施。
   - 現状は **テーブル作成手順が未整備**で、実運用/動作確認の最大のブロッカー。
 
 ### 実行に必要な環境変数
@@ -47,5 +47,5 @@
 
 ### 注意（MVPの危険ポイント）
 - `POST /api/conversations/:id/messages` は入力を `bash -lc` で実行する最短実装。
-  - 今後はホワイトリスト/ツール化/監査ログ/制限を必ず入れる（`.workspace-fs/next-tasks.md` 参照）。
+  - 今後はホワイトリスト/ツール化/監査ログ/制限を必ず入れる（`.workspace-fs/state.md` 参照）。
 

@@ -8,7 +8,7 @@ import { conversations } from "@/lib/schema";
 export const runtime = "nodejs";
 
 export async function GET(
-	request: Request,
+	_request: Request,
 	{ params }: { params: { id: string } },
 ) {
 	const session = await getSession();

@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 	}
 
 	const sandbox = await createSandbox();
-	const now = Date.now();
+	const now = new Date();
 	const conversationId = randomUUID();
 
 	await db.insert(conversations).values({

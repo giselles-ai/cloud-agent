@@ -25,7 +25,7 @@ export default function SignUpPage() {
 		});
 
 		if (signUpError) {
-			setError(signUpError.message);
+			setError(signUpError.message || "An error occurred");
 			setIsLoading(false);
 			return;
 		}

@@ -23,7 +23,7 @@ export default function SignInPage() {
 		});
 
 		if (signInError) {
-			setError(signInError.message);
+			setError(signInError.message || "An error occurred");
 			setIsLoading(false);
 			return;
 		}

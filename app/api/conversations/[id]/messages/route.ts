@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { and, asc, desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -10,7 +10,7 @@ import { conversations, messages, sandboxInstances } from "@/lib/schema";
 export const runtime = "nodejs";
 
 async function archiveConversation(conversationId: string) {
-	const now = Date.now();
+	const now = new Date();
 	await db
 		.update(conversations)
 		.set({
@@ -31,7 +31,7 @@ async function archiveConversation(conversationId: string) {
 }
 
 export async function GET(
-	request: Request,
+	_request: Request,
 	{ params }: { params: { id: string } },
 ) {
 	const session = await getSession();
@@ -142,7 +142,7 @@ export async function POST(
 		// If timeout extension fails, continue with the current session.
 	}
 
-	const now = Date.now();
+	const now = new Date();
 	await db.insert(messages).values({
 		id: randomUUID(),
 		conversationId: params.id,
@@ -183,17 +183,17 @@ export async function POST(
 		role: "assistant",
 		content: assistantMessage,
 		metadata,
-		createdAt: Date.now(),
+		createdAt: now,
 	});
 
 	await db
 		.update(conversations)
-		.set({ updatedAt: Date.now() })
+		.set({ updatedAt: now })
 		.where(eq(conversations.id, params.id));
 
 	await db
 		.update(sandboxInstances)
-		.set({ updatedAt: Date.now() })
+		.set({ updatedAt: now })
 		.where(eq(sandboxInstances.id, sandboxRow[0].id));
 
 	return NextResponse.json({

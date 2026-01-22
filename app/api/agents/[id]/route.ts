@@ -1,40 +1,12 @@
-import { and, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
-
-import { getSession } from "@/lib/auth-utils";
-import { db } from "@/lib/db";
-import { agents } from "@/lib/schema";
-
-export const runtime = "nodejs";
-
-export async function GET(
-	request: Request,
-	{ params }: { params: { id: string } },
-) {
-	const session = await getSession();
-	if (!session) {
-		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-	}
-
-	const row = await db
-		.select()
-		.from(agents)
-		.where(and(eq(agents.id, params.id), eq(agents.userId, session.user.id)));
-
-	if (!row[0]) {
-		return NextResponse.json({ error: "Not found" }, { status: 404 });
-	}
-
-	return NextResponse.json({ agent: row[0] });
-}
-
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { agents } from "@/lib/db/schema/agents";
+import { agents } from "@/lib/schema";
+
+export const runtime = "nodejs";
 
 type AgentUpdate = {
 	name?: string;
@@ -95,6 +67,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 	}
 
 	const updates: Partial<typeof agents.$inferInsert> = {};
+	updates.updatedAt = new Date();
 	if (body.name) updates.name = body.name;
 	if (body.systemPrompt) updates.systemPrompt = body.systemPrompt;
 	if (body.tools)

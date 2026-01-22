@@ -9,7 +9,7 @@ import { conversations, sandboxInstances } from "@/lib/schema";
 export const runtime = "nodejs";
 
 export async function POST(
-	request: Request,
+	_request: Request,
 	{ params }: { params: { id: string } },
 ) {
 	const session = await getSession();
@@ -31,7 +31,7 @@ export async function POST(
 		return NextResponse.json({ error: "Not found" }, { status: 404 });
 	}
 
-	const now = Date.now();
+	const now = new Date();
 	const sandboxRow = await db
 		.select()
 		.from(sandboxInstances)

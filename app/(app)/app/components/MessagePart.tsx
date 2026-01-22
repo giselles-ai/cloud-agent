@@ -1,15 +1,15 @@
 "use client";
 
-import type { UIMessagePart } from "ai";
+import type { UIDataTypes, UIMessagePart, UITools } from "ai";
 import { useMemo, useState } from "react";
 
 import { ModalDialog } from "./ModalDialog";
 
 type MessagePartProps = {
-	part: UIMessagePart;
+	part: UIMessagePart<UIDataTypes, UITools>;
 };
 
-type ToolPart = UIMessagePart & {
+type ToolPart = UIMessagePart<UIDataTypes, UITools> & {
 	type: string;
 	state?: string;
 	input?: Record<string, unknown>;
@@ -64,6 +64,21 @@ function ToolCard({
 }
 
 export function MessagePart({ part }: MessagePartProps) {
+	// Hooks must be called at the top level, unconditionally
+	const [isOpen, setIsOpen] = useState(false);
+
+	const toolPart = part as ToolPart;
+	const toolName = getToolName(toolPart);
+	const input = toolPart.input ?? {};
+	const output = toolPart.output ?? {};
+
+	const content = useMemo(() => {
+		if (typeof output.content === "string") {
+			return output.content;
+		}
+		return "";
+	}, [output.content]);
+
 	if (part.type === "text") {
 		return (
 			<pre className="whitespace-pre-wrap text-slate-200">{part.text}</pre>
@@ -150,17 +165,13 @@ export function MessagePart({ part }: MessagePartProps) {
 					{part.type}
 				</summary>
 				<div className="mt-2">
-					<JsonBlock value={part.data} />
+					<JsonBlock value={(part as any).data} />
 				</div>
 			</details>
 		);
 	}
 
 	if (part.type === "dynamic-tool" || part.type.startsWith("tool-")) {
-		const toolPart = part as ToolPart;
-		const toolName = getToolName(toolPart);
-		const input = toolPart.input ?? {};
-		const output = toolPart.output ?? {};
 		const isErrorState = toolPart.state === "output-error";
 		const errorText = toolPart.errorText;
 
@@ -181,7 +192,7 @@ export function MessagePart({ part }: MessagePartProps) {
 								Exit code
 							</div>
 							<div className="text-slate-200">
-								{output.exitCode ?? "-"}
+								{String(output.exitCode ?? "-")}
 							</div>
 						</div>
 						<details className="rounded border border-slate-800 bg-slate-950/70 px-2 py-1">
@@ -240,14 +251,6 @@ export function MessagePart({ part }: MessagePartProps) {
 		}
 
 		if (toolName === "readFile") {
-			const [isOpen, setIsOpen] = useState(false);
-			const content = useMemo(() => {
-				if (typeof output.content === "string") {
-					return output.content;
-				}
-				return "";
-			}, [output.content]);
-
 			return (
 				<>
 					<ToolCard part={toolPart}>
@@ -256,9 +259,7 @@ export function MessagePart({ part }: MessagePartProps) {
 								<div className="text-[11px] uppercase tracking-wide text-slate-500">
 									Path
 								</div>
-								<div className="text-slate-200">
-									{String(input.path ?? "")}
-								</div>
+								<div className="text-slate-200">{String(input.path ?? "")}</div>
 							</div>
 							<button
 								type="button"

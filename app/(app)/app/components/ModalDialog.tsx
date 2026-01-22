@@ -40,10 +40,23 @@ export function ModalDialog({
 					onClose();
 				}
 			}}
+			onKeyDown={(event) => {
+				if (event.key === "Enter" || event.key === " ") {
+					event.preventDefault();
+					onClose();
+				}
+			}}
 		>
-			<div className="w-full max-w-2xl rounded border border-slate-800 bg-slate-950 p-4 shadow-xl">
+			<div
+				className="w-full max-w-2xl rounded border border-slate-800 bg-slate-950 p-4 shadow-xl"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="modal-title"
+			>
 				<div className="flex items-center justify-between border-b border-slate-800 pb-2">
-					<h3 className="text-sm font-semibold text-slate-200">{title}</h3>
+					<h3 id="modal-title" className="text-sm font-semibold text-slate-200">
+						{title}
+					</h3>
 					<button
 						type="button"
 						onClick={onClose}

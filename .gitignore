@@ -45,3 +45,4 @@ opensrc/
 llms-furl/
 
 .mise.*.toml
+.env*.local

@@ -43,10 +43,12 @@ This file alone summarizes goals, decisions, implementation status, and next tas
   - Messages: `GET/POST /api/conversations/:id/messages`
   - Chat stream: `POST /api/chat` (AI SDK UI stream, ToolLoopAgent)
   - Archive: `POST /api/conversations/:id/archive`
+  - Sandbox files: `GET /api/conversations/:id/sandbox/files?path=...` (download)
 - **UI**
   - `app/(auth)/*` (sign-in/sign-up)
   - `app/(app)/layout.tsx`, `app/(app)/app/page.tsx` (/app)
   - Chat uses AI SDK UI `useChat` with `/api/chat`
+  - writeFile tool path triggers sandbox download
 
 ### Open issues / blockers
 - **DB migrations not set up** (BetterAuth tables + app tables)

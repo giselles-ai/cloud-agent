@@ -371,6 +371,7 @@ export default function AppPage() {
 													<MessagePart
 														key={`${message.id}-${index}`}
 														part={part}
+														conversationId={selectedConversationId}
 													/>
 												))}
 											</div>

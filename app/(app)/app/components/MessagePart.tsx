@@ -7,6 +7,7 @@ import { ModalDialog } from "./ModalDialog";
 
 type MessagePartProps = {
 	part: UIMessagePart<UIDataTypes, UITools>;
+	conversationId?: string | null;
 };
 
 type ToolPart = UIMessagePart<UIDataTypes, UITools> & {
@@ -28,6 +29,11 @@ function getToolName(part: ToolPart): string {
 
 function renderJson(value: unknown) {
 	return JSON.stringify(value, null, 2);
+}
+
+function filenameFromPath(path: string) {
+	const name = path.split("/").pop();
+	return name && name.trim().length > 0 ? name : "file";
 }
 
 function JsonBlock({ value }: { value: unknown }) {
@@ -63,9 +69,10 @@ function ToolCard({
 	);
 }
 
-export function MessagePart({ part }: MessagePartProps) {
+export function MessagePart({ part, conversationId }: MessagePartProps) {
 	// Hooks must be called at the top level, unconditionally
 	const [isOpen, setIsOpen] = useState(false);
+	const [isDownloading, setIsDownloading] = useState(false);
 
 	const toolPart = part as ToolPart;
 	const toolName = getToolName(toolPart);
@@ -222,13 +229,55 @@ export function MessagePart({ part }: MessagePartProps) {
 		}
 
 		if (toolName === "writeFile") {
+			const pathValue = String(input.path ?? "");
+			const canDownload = Boolean(conversationId && pathValue);
+			const handleDownload = async () => {
+				if (!conversationId || !pathValue || isDownloading) {
+					return;
+				}
+				setIsDownloading(true);
+				try {
+					const response = await fetch(
+						`/api/conversations/${conversationId}/sandbox/files?path=${encodeURIComponent(
+							pathValue,
+						)}`,
+					);
+					if (!response.ok) {
+						throw new Error(`Download failed (${response.status})`);
+					}
+					const blob = await response.blob();
+					const url = URL.createObjectURL(blob);
+					const link = document.createElement("a");
+					link.href = url;
+					link.download = filenameFromPath(pathValue);
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
+					URL.revokeObjectURL(url);
+				} catch (error) {
+					console.error("Failed to download file from sandbox.", error);
+				} finally {
+					setIsDownloading(false);
+				}
+			};
 			return (
 				<ToolCard part={toolPart}>
 					<div>
 						<div className="text-[11px] uppercase tracking-wide text-slate-500">
 							Path
 						</div>
-						<div className="text-slate-200">{String(input.path ?? "")}</div>
+						{canDownload ? (
+							<button
+								type="button"
+								onClick={handleDownload}
+								disabled={isDownloading}
+								className="text-left text-slate-200 underline decoration-slate-500 underline-offset-2 disabled:opacity-70"
+							>
+								{pathValue}
+							</button>
+						) : (
+							<div className="text-slate-200">{pathValue}</div>
+						)}
 					</div>
 					<div>
 						<div className="text-[11px] uppercase tracking-wide text-slate-500">

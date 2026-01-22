@@ -11,6 +11,17 @@
 - **ORM**: Drizzle
 - **Sandbox**: `@vercel/sandbox`（Vercel Sandbox SDK）
 
+#### Drizzle マイグレーション方針（Turso/libsql）
+- **正**: `drizzle-kit generate` → `drizzle-kit migrate`
+- **禁止（本番/共有環境）**: `drizzle-kit push`（ローカルの試行錯誤用途のみ）
+- **migrations ディレクトリ**: `db/migrations/`
+  - コミット対象: `db/migrations/*.sql` と `db/migrations/meta/**`
+  - 手編集は原則しない（schema を直して再生成）
+
+#### better-auth のスキーマ取り込み
+- `@better-auth/cli generate` で Drizzle schema を生成し、repo に取り込んで Drizzle Kit の migrations に含める。
+  - CLI は import alias で落ちやすいので、CLI専用 config（`scripts/better-auth.config.ts`）を使う。
+
 #### Sandboxライフサイクル方針（MVP）
 - **Active**: 会話中はSandboxを生かす（DBに `sandboxId` を保存し、再接続は `Sandbox.get()`）。必要に応じて `extendTimeout()`。
 - **Archived**: Sandboxが停止した会話はArchivedとして扱う。

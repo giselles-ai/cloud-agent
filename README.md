@@ -26,7 +26,19 @@ Create a `.env.local` with:
 
 ```
 AI_GATEWAY_API_KEY=your_api_key_here
+DATABASE_URL=your_database_url_here
+DATABASE_AUTH_TOKEN=your_database_auth_token_here
 ```
+
+### DB Migration (Drizzle + Turso/libsql)
+
+We use **Drizzle Kit SQL migrations** as the source of truth:
+
+- **Generate migrations**: `bunx drizzle-kit generate`
+- **Apply migrations**: `bunx drizzle-kit migrate`
+- **Do NOT use** `drizzle-kit push` for production/shared environments (local prototyping only).
+
+Migrations live in `db/migrations/` and should be committed, including `db/migrations/meta/**`.
 
 ### Browser Tool
 

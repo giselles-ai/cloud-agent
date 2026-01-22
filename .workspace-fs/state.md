@@ -26,8 +26,7 @@
   - `app/api/auth/[...all]/route.ts`
 - **DB**
   - `lib/db.ts`
-  - 環境変数（現状の実装）: `TURSO_CONNECTION_URL`, `TURSO_AUTH_TOKEN`
-    - 注意: ドキュメント/メモでは `TURSO_DATABASE_URL` 表記が混在しているため **どちらかに統一が必要**
+  - 環境変数（現状の実装）: `DATABASE_URL`, `DATABASE_AUTH_TOKEN`
 - **App tables（schema）**
   - `lib/schema/*`（agents / conversations / messages / sandbox_instances）
 - **Sandbox**
@@ -49,8 +48,8 @@
 
 #### 0. 環境変数/ローカルセットアップ
 - [ ] `.env.local` を用意（最低限）
-  - [ ] `TURSO_CONNECTION_URL`（または `TURSO_DATABASE_URL` に統一して実装側も合わせる）
-  - [ ] `TURSO_AUTH_TOKEN`
+  - [ ] `DATABASE_URL`
+  - [ ] `DATABASE_AUTH_TOKEN`
 - [ ] Vercel Sandbox認証（ローカル開発）
   - [ ] `vercel link`
   - [ ] `vercel env pull`（`VERCEL_OIDC_TOKEN` が入る想定）

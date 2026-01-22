@@ -6,6 +6,10 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
+		"db:auth:generate": "bunx @better-auth/cli@latest generate --config ./scripts/better-auth.config.ts --output ./lib/schema/better-auth.ts --yes",
+		"db:generate": "bunx drizzle-kit generate",
+		"db:migrate": "bunx drizzle-kit migrate",
+		"db:push": "bunx drizzle-kit push",
 		"lint": "biome check",
 		"format": "biome format --write"
 	},

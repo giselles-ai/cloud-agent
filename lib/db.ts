@@ -3,15 +3,15 @@ import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "@/lib/schema";
 
-const connectionUrl = process.env.TURSO_CONNECTION_URL;
-const authToken = process.env.TURSO_AUTH_TOKEN;
+const databaseUrl = process.env.DATABASE_URL;
+const authToken = process.env.DATABASE_AUTH_TOKEN;
 
-if (!connectionUrl || !authToken) {
-	throw new Error("Missing Turso environment variables.");
+if (!databaseUrl || !authToken) {
+	throw new Error("Missing database environment variables.");
 }
 
 const client = createClient({
-	url: connectionUrl,
+	url: databaseUrl,
 	authToken,
 });
 

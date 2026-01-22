@@ -41,3 +41,11 @@ Workflow:
 4. If no relevant info is found, state that and then move on to other sources.
 
 <!-- llms-furl:end -->
+
+## Project notes workflow (`.workspace-fs/`)
+
+When you make changes that affect how the next person/agent should work (env vars, setup, API shape, state machines, key decisions), **also update the relevant files under `.workspace-fs/`** so it remains the single source of truth:
+
+- `.workspace-fs/state.md` (current state + next tasks)
+- `.workspace-fs/decisions.md` (decisions + rationale)
+- `.workspace-fs/worklog-YYYY-MM-DD.md` (what changed today)

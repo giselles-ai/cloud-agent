@@ -39,9 +39,9 @@
   - 現状は **テーブル作成手順が未整備**で、実運用/動作確認の最大のブロッカー。
 
 ### 実行に必要な環境変数
-- Turso:
-  - `TURSO_DATABASE_URL`
-  - `TURSO_AUTH_TOKEN`
+- DB:
+  - `DATABASE_URL`
+  - `DATABASE_AUTH_TOKEN`
 - Vercel Sandbox:
   - ローカルは `vercel link` + `vercel env pull` で `VERCEL_OIDC_TOKEN` を取得する想定
 

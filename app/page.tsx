@@ -14,7 +14,7 @@ export default async function Home() {
 			<div className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6">
 				<h1 className="text-3xl font-semibold">Cloud Agent</h1>
 				<p className="mt-2 text-sm text-slate-400">
-					Vercel Sandbox で動くエージェントと対話するMVP。
+					An MVP for chatting with agents running in Vercel Sandbox.
 				</p>
 				<div className="mt-6 flex gap-3">
 					<a

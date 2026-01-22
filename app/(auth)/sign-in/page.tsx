@@ -36,7 +36,7 @@ export default function SignInPage() {
 			<div>
 				<h1 className="text-2xl font-semibold">Sign in</h1>
 				<p className="text-sm text-slate-400">
-					Email and password でログインします。
+					Sign in with your email and password.
 				</p>
 			</div>
 			<form onSubmit={handleSubmit} className="space-y-4">
@@ -76,7 +76,7 @@ export default function SignInPage() {
 				</button>
 			</form>
 			<p className="text-sm text-slate-400">
-				まだアカウントがない？{" "}
+				Don't have an account?{" "}
 				<a className="text-indigo-400 hover:underline" href="/sign-up">
 					Sign up
 				</a>

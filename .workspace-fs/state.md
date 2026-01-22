@@ -1,34 +1,34 @@
-## Project State（単一ソース）
+## Project State (Single Source of Truth)
 
-このファイルだけ見れば「目的 / 意思決定 / 実装状況 / 次にやること」が分かるようにまとめています。
+This file alone summarizes goals, decisions, implementation status, and next tasks.
 
-### 目的（tobe）
-- ログイン→エージェント作成→対話UIでコミュニケーション
-- エージェントは **Vercel Sandbox** 上で動き、Sandbox内でコード実行/ファイル操作できる（まずは最小）
+### Goals (tobe)
+- Login -> create agent -> communicate via chat UI
+- Agents run on **Vercel Sandbox** and can execute code / file operations inside the sandbox (minimal first)
 
-### 意思決定（MVP）
-- **App**: Next.js（App Router）
-- **Auth**: BetterAuth（Email+Password）
-- **DB**: Turso（libSQL/SQLite）
+### Decisions (MVP)
+- **App**: Next.js (App Router)
+- **Auth**: BetterAuth (Email+Password)
+- **DB**: Turso (libSQL/SQLite)
 - **ORM**: Drizzle
 - **Sandbox**: `@vercel/sandbox`
-- **Sandboxライフサイクル**
-  - Active: 会話中は `sandboxId` を保持し、必要なら `extendTimeout()`
-  - Archived: Sandbox停止した会話はArchivedとして扱う
-  - MVPでは Archived は **チャット履歴のみ**（Sandbox FS永続化はしない）
+- **Sandbox lifecycle**
+  - Active: keep `sandboxId` during a conversation and call `extendTimeout()` as needed
+  - Archived: treat conversations whose sandbox stopped as archived
+  - MVP: Archived is **chat history only** (no Sandbox FS persistence)
 
-### 実装状況（現時点）
-- **入口**
-  - 未ログイン: `/` → `/sign-in` or `/sign-up`
-  - ログイン後: `/app`
+### Current implementation
+- **Entry**
+  - Logged out: `/` -> `/sign-in` or `/sign-up`
+  - Logged in: `/app`
 - **Auth**
   - `lib/auth.ts`, `lib/auth-client.ts`, `lib/auth-utils.ts`
   - `app/api/auth/[...all]/route.ts`
 - **DB**
   - `lib/db.ts`
-  - 環境変数（現状の実装）: `DATABASE_URL`, `DATABASE_AUTH_TOKEN`
-- **App tables（schema）**
-  - `lib/schema/*`（agents / conversations / messages / sandbox_instances）
+  - Env vars (current implementation): `DATABASE_URL`, `DATABASE_AUTH_TOKEN`
+- **App tables (schema)**
+  - `lib/schema/*` (agents / conversations / messages / sandbox_instances)
 - **Sandbox**
   - `lib/sandbox/manager.ts`
 - **API**
@@ -37,59 +37,59 @@
   - Messages: `GET/POST /api/conversations/:id/messages`
   - Archive: `POST /api/conversations/:id/archive`
 - **UI**
-  - `app/(auth)/*`（sign-in/sign-up）
-  - `app/(app)/layout.tsx`, `app/(app)/app/page.tsx`（/app）
+  - `app/(auth)/*` (sign-in/sign-up)
+  - `app/(app)/layout.tsx`, `app/(app)/app/page.tsx` (/app)
 
-### 未解決 / ブロッカー
-- **DBマイグレーション未整備**（BetterAuthテーブル + appテーブル作成）
-- **セキュリティ**: 現状は「入力= `bash -lc` 実行」の最短実装（今後ホワイトリスト/ツール化/制限が必須）
+### Open issues / blockers
+- **DB migrations not set up** (BetterAuth tables + app tables)
+- **Security**: current implementation executes input via `bash -lc` (future whitelisting/tooling/limits are required)
 
-### 次に人間がやるタスク（チェックリスト）
+### Next human tasks (checklist)
 
-#### 0. 環境変数/ローカルセットアップ
-- [ ] `.env.local` を用意（最低限）
+#### 0. Env/local setup
+- [ ] Prepare `.env.local` (minimum)
   - [ ] `DATABASE_URL`
   - [ ] `DATABASE_AUTH_TOKEN`
-- [ ] Vercel Sandbox認証（ローカル開発）
+- [ ] Vercel Sandbox auth (local dev)
   - [ ] `vercel link`
-  - [ ] `vercel env pull`（`VERCEL_OIDC_TOKEN` が入る想定）
-- [ ] 依存関係をインストール（`bun install` 等）
+  - [ ] `vercel env pull` (expect `VERCEL_OIDC_TOKEN`)
+- [ ] Install dependencies (`bun install`, etc.)
 
-#### 1. DBマイグレーションを確立（最優先）
-目的: **BetterAuthのテーブル** と **アプリ用テーブル** をTursoに作る。
+#### 1. Establish DB migrations (highest priority)
+Goal: create **BetterAuth tables** and **app tables** in Turso.
 
-- [ ] Drizzleのマイグレーション方針を決める
-  - [ ] `drizzle.config.ts` を追加（Turso/libsql向け）
-  - [ ] `migrations/` ディレクトリ運用を決める
-- [ ] BetterAuthのスキーマ生成/適用手順を整備
-  - [ ] BetterAuth CLIで必要テーブルを生成する
-  - [ ] Drizzle側のマイグレーションとしてTursoへ適用する
-- [ ] Appスキーマ（`lib/schema/*`）をDBに反映
-  - [ ] `agents`, `conversations`, `messages`, `sandbox_instances` を作成
-- [ ] ローカルからAPI叩いて動作確認（サインアップ→エージェント作成→会話開始）
+- [ ] Decide Drizzle migration policy
+  - [ ] Add `drizzle.config.ts` (for Turso/libsql)
+  - [ ] Decide `migrations/` directory workflow
+- [ ] Set up BetterAuth schema generation/apply
+  - [ ] Generate required tables with BetterAuth CLI
+  - [ ] Apply as Drizzle migrations to Turso
+- [ ] Apply app schema (`lib/schema/*`) to DB
+  - [ ] Create `agents`, `conversations`, `messages`, `sandbox_instances`
+- [ ] Verify locally by calling APIs (sign up -> create agent -> start conversation)
 
-#### 2. 認証/ルーティングの体験を整える
-- [ ] `/app` 直アクセス時の導線確認（未ログイン→sign-inへ）
-- [ ] サインイン/アップ後の遷移確認
-- [ ] エラーメッセージ整備（401/409/500など）
+#### 2. Improve auth/routing UX
+- [ ] Confirm `/app` direct access flow (logged out -> sign-in)
+- [ ] Confirm redirects after sign-in/up
+- [ ] Improve error messages (401/409/500, etc.)
 
-#### 3. 会話のArchived体験を整える
-- [ ] Sandbox停止/失敗/timeout時の状態遷移をUIで分かりやすくする
-  - [ ] `active/archived/failed` の表示とフィルタ
-  - [ ] Archivedは送信不可＋履歴閲覧のみ（現状OK）
-- [ ] 「Archivedな会話を再開」要件を決める
-  - [ ] MVP案: 「再開=新規会話開始（新Sandbox）」でOK
+#### 3. Improve Archived experience
+- [ ] Make status transitions clearer in UI
+  - [ ] Show `active/archived/failed` labels and filters
+  - [ ] Archived is read-only + history only (current OK)
+- [ ] Decide "resume archived conversation" requirement
+  - [ ] MVP idea: resume = start new conversation (new sandbox)
 
-#### 4. セキュリティ（MVPの次に必須）
-- [ ] 実行できるコマンド/ツールをホワイトリスト化
-- [ ] コマンド実行ログ（監査ログ）をDBに保存（messages.metadata だけで足りるか見直し）
-- [ ] リソース/時間制限のポリシー（timeout, vCPU, 禁止コマンド等）
+#### 4. Security (required after MVP)
+- [ ] Whitelist allowed commands/tools
+- [ ] Store command execution logs in DB (revisit messages.metadata)
+- [ ] Define resource/time limits (timeout, vCPU, blocked cmds)
 
-#### 5. 片付け/整理（任意）
-- [ ] `app/api/chats/[id]/messages/` など未使用の空ディレクトリを整理
-- [ ] APIレスポンス型を共通化（zod等導入するか検討）
+#### 5. Cleanup / organization (optional)
+- [ ] Remove unused empty directories like `app/api/chats/[id]/messages/`
+- [ ] Consider shared API response types (zod, etc.)
 
-### 参考（必要なら読む）
-- `.workspace-fs/decisions.md`（詳細な意思決定メモ）
-- `.workspace-fs/worklog-2026-01-22.md`（実装ログ）
-- `.workspace-fs/AGENTS.md`（次のAgent向けの入口/主要ファイル）
+### References (read if needed)
+- `.workspace-fs/decisions.md` (decision memo)
+- `.workspace-fs/worklog-2026-01-22.md` (implementation log)
+- `.workspace-fs/AGENTS.md` (entry point for the next agent)

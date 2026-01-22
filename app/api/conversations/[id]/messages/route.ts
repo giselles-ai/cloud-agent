@@ -45,10 +45,7 @@ export async function GET(_request: Request, context: RouteContext) {
 		.select()
 		.from(conversations)
 		.where(
-			and(
-				eq(conversations.id, id),
-				eq(conversations.userId, session.user.id),
-			),
+			and(eq(conversations.id, id), eq(conversations.userId, session.user.id)),
 		);
 
 	if (!convo[0]) {
@@ -75,10 +72,7 @@ export async function POST(request: Request, context: RouteContext) {
 		.select()
 		.from(conversations)
 		.where(
-			and(
-				eq(conversations.id, id),
-				eq(conversations.userId, session.user.id),
-			),
+			and(eq(conversations.id, id), eq(conversations.userId, session.user.id)),
 		);
 
 	if (!convo[0]) {

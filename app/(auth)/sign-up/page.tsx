@@ -38,7 +38,7 @@ export default function SignUpPage() {
 			<div>
 				<h1 className="text-2xl font-semibold">Sign up</h1>
 				<p className="text-sm text-slate-400">
-					Email とパスワードでアカウントを作成します。
+					Create an account with your email and password.
 				</p>
 			</div>
 			<form onSubmit={handleSubmit} className="space-y-4">
@@ -91,7 +91,7 @@ export default function SignUpPage() {
 				</button>
 			</form>
 			<p className="text-sm text-slate-400">
-				既にアカウントがある？{" "}
+				Already have an account?{" "}
 				<a className="text-indigo-400 hover:underline" href="/sign-in">
 					Sign in
 				</a>

@@ -1,4 +1,4 @@
-ログインして、エージェントを作成し、対話的なUIでコミュニケーションができる。
-よくあるアプリと大体一緒だが特徴的なのはエージェントがVercel Sandboxを使ったSandbox環境で動作すること。
-ファイルシステムのランタイムを保持しているので、ユーザーがアップロードしたファイルを読み込み、新しいファイルを作成したり、
-コードを書いて実行して、その結果を返したりできる。
+Log in, create an agent, and communicate through an interactive UI.
+It's similar to a typical app, but the key feature is that agents run inside a Vercel Sandbox environment.
+Because the filesystem runtime is preserved, users can read uploaded files, create new files,
+write and execute code, and return the results.

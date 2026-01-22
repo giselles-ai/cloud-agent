@@ -23,10 +23,7 @@ export async function POST(_request: Request, context: RouteContext) {
 		.select()
 		.from(conversations)
 		.where(
-			and(
-				eq(conversations.id, id),
-				eq(conversations.userId, session.user.id),
-			),
+			and(eq(conversations.id, id), eq(conversations.userId, session.user.id)),
 		);
 
 	if (!convo[0]) {

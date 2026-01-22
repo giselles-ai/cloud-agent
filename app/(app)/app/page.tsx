@@ -181,7 +181,7 @@ export default function AppPage() {
 				<div>
 					<h2 className="text-sm font-semibold text-slate-200">Agents</h2>
 					<p className="text-xs text-slate-400">
-						エージェントを作成して会話を開始します。
+						Create an agent to start a conversation.
 					</p>
 				</div>
 				<div className="space-y-2">
@@ -289,7 +289,7 @@ export default function AppPage() {
 					{selectedConversation ? (
 						<>
 							<p className="mt-1 text-xs text-slate-400">
-								コマンドとして入力した内容がSandbox上で実行されます。
+								Commands you enter run in the sandbox.
 							</p>
 							<div className="mt-4 space-y-3 rounded border border-slate-800 bg-slate-950 p-3 text-xs">
 								{messages.length === 0 ? (
@@ -333,13 +333,13 @@ export default function AppPage() {
 								</div>
 							) : (
 								<p className="mt-4 text-xs text-slate-500">
-									Archived: 送信はできません。
+									Archived: sending is disabled.
 								</p>
 							)}
 						</>
 					) : (
 						<p className="mt-2 text-xs text-slate-500">
-							Conversation を選択してください。
+							Select a conversation.
 						</p>
 					)}
 

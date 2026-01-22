@@ -51,7 +51,7 @@ bunx agent-browser install
 ### One-shot Test
 
 ```bash
-bun scripts/test-agent.ts "README を要約して"
+bun scripts/test-agent.ts "Summarize the README"
 ```
 
 ## Learn More

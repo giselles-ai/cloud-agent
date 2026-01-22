@@ -1,5 +1,7 @@
 "use client";
 
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useState } from "react";
 
 type Agent = {
@@ -20,7 +22,52 @@ type Message = {
 	role: string;
 	content: string;
 	createdAt: number;
+	metadata?: string | null;
 };
+
+type StoredUiMessage = UIMessage;
+
+function parseStoredUiMessage(
+	metadata?: string | null,
+): StoredUiMessage | null {
+	if (!metadata) {
+		return null;
+	}
+	try {
+		const parsed = JSON.parse(metadata) as {
+			uiMessage?: StoredUiMessage;
+		} | null;
+		if (parsed?.uiMessage?.parts && parsed.uiMessage.role) {
+			return parsed.uiMessage;
+		}
+		if (
+			(parsed as StoredUiMessage | null)?.parts &&
+			(parsed as StoredUiMessage | null)?.role
+		) {
+			return parsed as StoredUiMessage;
+		}
+	} catch {
+		return null;
+	}
+	return null;
+}
+
+function rowToUiMessage(row: Message): StoredUiMessage {
+	const stored = parseStoredUiMessage(row.metadata ?? null);
+	if (stored) {
+		return stored;
+	}
+	return {
+		id: row.id,
+		role: row.role as StoredUiMessage["role"],
+		parts: [
+			{
+				type: "text",
+				text: row.content,
+			},
+		],
+	};
+}
 
 async function fetchJson<T>(
 	input: RequestInfo,
@@ -37,7 +84,6 @@ async function fetchJson<T>(
 export default function AppPage() {
 	const [agents, setAgents] = useState<Agent[]>([]);
 	const [conversations, setConversations] = useState<Conversation[]>([]);
-	const [messages, setMessages] = useState<Message[]>([]);
 	const [selectedConversationId, setSelectedConversationId] = useState<
 		string | null
 	>(null);
@@ -47,6 +93,41 @@ export default function AppPage() {
 	const [messageInput, setMessageInput] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const refreshConversations = async () => {
+		const convoRes = await fetchJson<{ conversations: Conversation[] }>(
+			"/api/conversations",
+		);
+		setConversations(convoRes.conversations);
+	};
+
+	const chatTransport = useMemo(
+		() =>
+			new DefaultChatTransport({
+				api: "/api/chat",
+				prepareSendMessagesRequest: ({ messages }) => ({
+					body: {
+						conversationId: selectedConversationId,
+						message: messages[messages.length - 1],
+					},
+				}),
+			}),
+		[selectedConversationId],
+	);
+
+	const {
+		messages,
+		sendMessage,
+		setMessages,
+		status: chatStatus,
+		error: chatError,
+	} = useChat<StoredUiMessage>({
+		id: selectedConversationId ?? "no-conversation",
+		transport: chatTransport,
+		onFinish: async () => {
+			await refreshConversations();
+		},
+	});
 
 	const selectedConversation = useMemo(
 		() => conversations.find((c) => c.id === selectedConversationId) ?? null,
@@ -68,13 +149,6 @@ export default function AppPage() {
 		};
 		void loadInitial();
 	}, []);
-
-	const refreshConversations = async () => {
-		const convoRes = await fetchJson<{ conversations: Conversation[] }>(
-			"/api/conversations",
-		);
-		setConversations(convoRes.conversations);
-	};
 
 	const handleCreateAgent = async () => {
 		setError(null);
@@ -130,7 +204,7 @@ export default function AppPage() {
 			const res = await fetchJson<{ messages: Message[] }>(
 				`/api/conversations/${conversationId}/messages`,
 			);
-			setMessages(res.messages);
+			setMessages(res.messages.map(rowToUiMessage));
 		} catch (err) {
 			setError(err instanceof Error ? err.message : String(err));
 		}
@@ -141,22 +215,12 @@ export default function AppPage() {
 			return;
 		}
 		setError(null);
-		setIsLoading(true);
 		const content = messageInput.trim();
 		setMessageInput("");
 		try {
-			await fetchJson(`/api/conversations/${selectedConversationId}/messages`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ content }),
-			});
-			await handleSelectConversation(selectedConversationId);
-			await refreshConversations();
+			await sendMessage({ text: content });
 		} catch (err) {
 			setError(err instanceof Error ? err.message : String(err));
-			await refreshConversations();
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
@@ -301,7 +365,9 @@ export default function AppPage() {
 												{message.role}
 											</div>
 											<pre className="whitespace-pre-wrap text-slate-200">
-												{message.content}
+												{message.parts.map((part) =>
+													part.type === "text" ? part.text : "",
+												)}
 											</pre>
 										</div>
 									))
@@ -321,14 +387,21 @@ export default function AppPage() {
 												void handleSendMessage();
 											}
 										}}
+										disabled={chatStatus !== "ready" || isLoading}
 									/>
 									<button
 										type="button"
 										onClick={handleSendMessage}
-										disabled={isLoading}
+										disabled={
+											isLoading ||
+											chatStatus === "submitted" ||
+											chatStatus === "streaming"
+										}
 										className="rounded bg-indigo-500 px-3 py-2 text-sm text-white disabled:opacity-70"
 									>
-										Send
+										{chatStatus === "submitted" || chatStatus === "streaming"
+											? "Sending..."
+											: "Send"}
 									</button>
 								</div>
 							) : (
@@ -343,7 +416,11 @@ export default function AppPage() {
 						</p>
 					)}
 
-					{error ? <p className="mt-3 text-xs text-red-400">{error}</p> : null}
+					{error ? (
+						<p className="mt-3 text-xs text-red-400">{error}</p>
+					) : chatError ? (
+						<p className="mt-3 text-xs text-red-400">Something went wrong.</p>
+					) : null}
 				</div>
 			</section>
 		</div>

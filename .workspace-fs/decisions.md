@@ -33,9 +33,17 @@
   - MVP: only chat history is viewable (no sandbox FS persistence).
   - Therefore, FS loss after sandbox stop is acceptable.
 
+#### Chat transport (AI SDK UI)
+- Use AI SDK UI `useChat` on the client.
+- Server uses `ToolLoopAgent` + `createAgentUIStreamResponse` for SSE UI message streams.
+- Message persistence stores full `UIMessage` JSON in `messages.metadata` as `{ uiMessage: ... }`.
+- AI Gateway via `@ai-sdk/openai-compatible` with defaults:
+  - Base URL: `https://ai-gateway.vercel.sh/v1`
+  - Model: `anthropic/claude-sonnet-4.5`
+
 #### Security/constraints (MVP compromise)
-- MVP is the shortest path: "chat input = shell command executed in sandbox."
-  - Powerful but risky; future additions required: allowed tools/commands only, LLM planning -> execution, audit logs, resource limits.
+- MVP is the shortest path: "LLM can call bash tool in sandbox."
+  - Powerful but risky; future additions required: allowed tools/commands only, audit logs, resource limits.
 
 #### Language policy (repo)
 - Keep all UI and documentation text in English.

@@ -29,6 +29,10 @@ This file alone summarizes goals, decisions, implementation status, and next tas
   - Env vars (current implementation): `DATABASE_URL`, `DATABASE_AUTH_TOKEN`
 - **Auth env**
   - Optional allowlist: `SIGNUP_ALLOWED_EMAIL_DOMAINS` (comma-separated, exact-match domains)
+- **AI env**
+  - `AI_GATEWAY_API_KEY`
+  - Optional: `AI_GATEWAY_BASE_URL` (default `https://ai-gateway.vercel.sh/v1`)
+  - Optional: `AI_GATEWAY_MODEL` (default `anthropic/claude-sonnet-4.5`)
 - **App tables (schema)**
   - `lib/schema/*` (agents / conversations / messages / sandbox_instances)
 - **Sandbox**
@@ -37,14 +41,16 @@ This file alone summarizes goals, decisions, implementation status, and next tas
   - Agents: `GET/POST /api/agents`, `GET /api/agents/:id`
   - Conversations: `GET/POST /api/conversations`, `GET /api/conversations/:id`
   - Messages: `GET/POST /api/conversations/:id/messages`
+  - Chat stream: `POST /api/chat` (AI SDK UI stream, ToolLoopAgent)
   - Archive: `POST /api/conversations/:id/archive`
 - **UI**
   - `app/(auth)/*` (sign-in/sign-up)
   - `app/(app)/layout.tsx`, `app/(app)/app/page.tsx` (/app)
+  - Chat uses AI SDK UI `useChat` with `/api/chat`
 
 ### Open issues / blockers
 - **DB migrations not set up** (BetterAuth tables + app tables)
-- **Security**: current implementation executes input via `bash -lc` (future whitelisting/tooling/limits are required)
+- **Security**: LLM can call bash tool in sandbox (future whitelisting/tooling/limits are required)
 
 ### Next human tasks (checklist)
 

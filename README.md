@@ -28,7 +28,10 @@ Create a `.env.local` with:
 AI_GATEWAY_API_KEY=your_api_key_here
 DATABASE_URL=your_database_url_here
 DATABASE_AUTH_TOKEN=your_database_auth_token_here
+SIGNUP_ALLOWED_EMAIL_DOMAINS=example.com,example.jp
 ```
+
+`SIGNUP_ALLOWED_EMAIL_DOMAINS` is optional. When set, only exact-match domains are allowed for new user signups. Leave it empty or unset to allow all domains. (Quotes like `"example.com"` are allowed, but you can omit them.)
 
 ### DB Migration (Drizzle + Turso/libsql)
 

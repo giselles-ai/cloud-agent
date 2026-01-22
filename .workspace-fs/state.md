@@ -27,6 +27,8 @@ This file alone summarizes goals, decisions, implementation status, and next tas
 - **DB**
   - `lib/db.ts`
   - Env vars (current implementation): `DATABASE_URL`, `DATABASE_AUTH_TOKEN`
+- **Auth env**
+  - Optional allowlist: `SIGNUP_ALLOWED_EMAIL_DOMAINS` (comma-separated, exact-match domains)
 - **App tables (schema)**
   - `lib/schema/*` (agents / conversations / messages / sandbox_instances)
 - **Sandbox**

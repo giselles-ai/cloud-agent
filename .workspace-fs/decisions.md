@@ -22,6 +22,11 @@
 - Use `@better-auth/cli generate` to create Drizzle schema, bring it into the repo, and include it in Drizzle Kit migrations.
   - The CLI is fragile with import aliases, so use the CLI-only config (`scripts/better-auth.config.ts`).
 
+#### Sign-up email domain restriction
+- Use `SIGNUP_ALLOWED_EMAIL_DOMAINS` (comma-separated) to allowlist sign-up email domains.
+- Exact-match only; unset/empty means no restriction.
+- Enforce at user creation via Better Auth `databaseHooks.user.create.before` to cover all sign-up paths.
+
 #### Sandbox lifecycle policy (MVP)
 - **Active**: keep sandbox alive during conversation (store `sandboxId` in DB, reconnect via `Sandbox.get()`). Call `extendTimeout()` as needed.
 - **Archived**: conversations whose sandbox stopped are treated as archived.

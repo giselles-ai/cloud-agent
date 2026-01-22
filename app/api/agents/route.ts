@@ -29,7 +29,7 @@ export async function GET() {
 		.where(eq(agents.userId, session.user.id))
 		.orderBy(desc(agents.createdAt));
 
-  return NextResponse.json({ agents: rows });
+	return NextResponse.json({ agents: rows });
 }
 
 export async function POST(request: Request) {
@@ -51,14 +51,18 @@ export async function POST(request: Request) {
 		repoDepth?: string | null;
 	};
 
-	if (!body.name || !body.systemPrompt || !body.repoUrl) {
+	if (!body.name) {
 		return NextResponse.json(
 			{ error: "Missing required fields." },
 			{ status: 400 },
 		);
 	}
 
-	if (body.workspacePresetType !== "repo_public") {
+	if (
+		body.workspacePresetType !== undefined &&
+		body.workspacePresetType !== "" &&
+		body.workspacePresetType !== "repo_public"
+	) {
 		return NextResponse.json(
 			{ error: "Only repo_public preset is supported." },
 			{ status: 400 },

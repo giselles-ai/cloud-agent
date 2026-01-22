@@ -9,6 +9,10 @@ import { conversations, messages, sandboxInstances } from "@/lib/schema";
 
 export const runtime = "nodejs";
 
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
 async function archiveConversation(conversationId: string) {
 	const now = new Date();
 	await db
@@ -30,21 +34,19 @@ async function archiveConversation(conversationId: string) {
 		.where(eq(sandboxInstances.conversationId, conversationId));
 }
 
-export async function GET(
-	_request: Request,
-	{ params }: { params: { id: string } },
-) {
+export async function GET(_request: Request, context: RouteContext) {
 	const session = await getSession();
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
+	const { id } = await context.params;
 	const convo = await db
 		.select()
 		.from(conversations)
 		.where(
 			and(
-				eq(conversations.id, params.id),
+				eq(conversations.id, id),
 				eq(conversations.userId, session.user.id),
 			),
 		);
@@ -56,27 +58,25 @@ export async function GET(
 	const rows = await db
 		.select()
 		.from(messages)
-		.where(eq(messages.conversationId, params.id))
+		.where(eq(messages.conversationId, id))
 		.orderBy(asc(messages.createdAt));
 
 	return NextResponse.json({ messages: rows });
 }
 
-export async function POST(
-	request: Request,
-	{ params }: { params: { id: string } },
-) {
+export async function POST(request: Request, context: RouteContext) {
 	const session = await getSession();
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
+	const { id } = await context.params;
 	const convo = await db
 		.select()
 		.from(conversations)
 		.where(
 			and(
-				eq(conversations.id, params.id),
+				eq(conversations.id, id),
 				eq(conversations.userId, session.user.id),
 			),
 		);
@@ -104,7 +104,7 @@ export async function POST(
 		.from(sandboxInstances)
 		.where(
 			and(
-				eq(sandboxInstances.conversationId, params.id),
+				eq(sandboxInstances.conversationId, id),
 				eq(sandboxInstances.status, "running"),
 			),
 		)
@@ -112,7 +112,7 @@ export async function POST(
 		.limit(1);
 
 	if (!sandboxRow[0]) {
-		await archiveConversation(params.id);
+		await archiveConversation(id);
 		return NextResponse.json(
 			{ error: "Sandbox stopped", archived: true },
 			{ status: 409 },
@@ -121,14 +121,14 @@ export async function POST(
 
 	const sandbox = await getSandbox(sandboxRow[0].sandboxId);
 	if (!sandbox) {
-		await archiveConversation(params.id);
+		await archiveConversation(id);
 		return NextResponse.json(
 			{ error: "Sandbox not found", archived: true },
 			{ status: 409 },
 		);
 	}
 	if (sandbox.status !== "running") {
-		await archiveConversation(params.id);
+		await archiveConversation(id);
 		return NextResponse.json(
 			{ error: "Sandbox stopped", archived: true },
 			{ status: 409 },
@@ -145,7 +145,7 @@ export async function POST(
 	const now = new Date();
 	await db.insert(messages).values({
 		id: randomUUID(),
-		conversationId: params.id,
+		conversationId: id,
 		role: "user",
 		content,
 		createdAt: now,
@@ -179,7 +179,7 @@ export async function POST(
 
 	await db.insert(messages).values({
 		id: randomUUID(),
-		conversationId: params.id,
+		conversationId: id,
 		role: "assistant",
 		content: assistantMessage,
 		metadata,
@@ -189,7 +189,7 @@ export async function POST(
 	await db
 		.update(conversations)
 		.set({ updatedAt: now })
-		.where(eq(conversations.id, params.id));
+		.where(eq(conversations.id, id));
 
 	await db
 		.update(sandboxInstances)

@@ -7,21 +7,23 @@ import { conversations } from "@/lib/schema";
 
 export const runtime = "nodejs";
 
-export async function GET(
-	_request: Request,
-	{ params }: { params: { id: string } },
-) {
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function GET(_request: Request, context: RouteContext) {
 	const session = await getSession();
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
+	const { id } = await context.params;
 	const row = await db
 		.select()
 		.from(conversations)
 		.where(
 			and(
-				eq(conversations.id, params.id),
+				eq(conversations.id, id),
 				eq(conversations.userId, session.user.id),
 			),
 		);

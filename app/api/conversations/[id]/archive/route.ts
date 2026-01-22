@@ -8,21 +8,23 @@ import { conversations, sandboxInstances } from "@/lib/schema";
 
 export const runtime = "nodejs";
 
-export async function POST(
-	_request: Request,
-	{ params }: { params: { id: string } },
-) {
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function POST(_request: Request, context: RouteContext) {
 	const session = await getSession();
 	if (!session) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
+	const { id } = await context.params;
 	const convo = await db
 		.select()
 		.from(conversations)
 		.where(
 			and(
-				eq(conversations.id, params.id),
+				eq(conversations.id, id),
 				eq(conversations.userId, session.user.id),
 			),
 		);
@@ -35,7 +37,7 @@ export async function POST(
 	const sandboxRow = await db
 		.select()
 		.from(sandboxInstances)
-		.where(eq(sandboxInstances.conversationId, params.id));
+		.where(eq(sandboxInstances.conversationId, id));
 
 	if (sandboxRow[0]) {
 		await stopSandbox(sandboxRow[0].sandboxId);
@@ -48,7 +50,7 @@ export async function POST(
 	await db
 		.update(conversations)
 		.set({ status: "archived", archivedAt: now, updatedAt: now })
-		.where(eq(conversations.id, params.id));
+		.where(eq(conversations.id, id));
 
 	return NextResponse.json({ ok: true });
 }
